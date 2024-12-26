@@ -1,13 +1,13 @@
 import { bot } from "../bot/index.js";
 import { menuKeyboard } from "../keyboard/index.js";
-import { User } from "../model/index.js";
-// import { replyMessage } from "../action/index.js";
-// import { memorySave } from "../action/index.js";
-import { InlineKeyboard, session } from "grammy";
+import { User, Memorize } from "../model/index.js";
+import { session } from "grammy";
+import { confirmationKeyboard } from "../keyboard/index.js";
 import { conversations, createConversation } from "@grammyjs/conversations";
+import { text } from "express";
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
-bot.use(createConversation(conversationFunc));
+bot.use(createConversation(conversationFunc, "conversationFunc"));
 bot.command("start", async (ctx) => {
     const userId = ctx.from.id;
     const first_name = ctx.from.first_name;
@@ -28,31 +28,6 @@ bot.command("start", async (ctx) => {
         { parse_mode: "HTML", reply_markup: menuKeyboard }
     );
 });
-async function conversationFunc(conversation, ctx) {
-    const msg =
-        "Endi kalit so'z yuboring! \nAynan shu kalit so'z orqali bu ma'lumotni chatda jo'natasiz. Shuning uchun, kalit so'zni eslab qoling!";
-
-    const messageId = ctx.msg.message_id;
-
-    await ctx.reply(msg, { reply_to_message_id: messageId });
-    const { message } = await conversation.wait();
-
-    const obj = `
-    Kalit so'zi :${ctx.msg.text}
-
-Tekst :${message.text}
-    
-    `;
-
-    await ctx.reply(obj);
-
-    const inlinekeyboard = new InlineKeyboard()
-        .text("tasdiqlash ✅", "tasdiqlash")
-        .text("tahrirlash ✏️", "tahrirlash");
-
-    const newmsg = "Endi ma'lumot va kalit so'zini tasdiqlang!!!";
-    await ctx.reply(newmsg, { reply_markup: inlinekeyboard });
-}
 bot.command("help", (ctx) => {
     ctx.reply(
         "Buyruqlar:\n/start - Botni qayta ishga tushirish\n/help - Yordam\n/add - Yangi ma'lumot qo'shish\n/delete - Ma'lumot o'chirish"
@@ -64,6 +39,35 @@ bot.command("add", (ctx) => {
 bot.command("delete", (ctx) => {
     ctx.reply("botga malumotni o'chiramiz");
 });
+bot.callbackQuery("accept", async (ctx) => {
+    await ctx.answerCallbackQuery({ text: "Tasdiqlandi!" });
+    await ctx.reply("You confirmed the action!");
+});
+
+bot.callbackQuery("reset", async (ctx) => {
+    await ctx.answerCallbackQuery({ text: "Tahrirlash tanlandi." });
+    await ctx.reply("You chose to reset.");
+});
+async function conversationFunc(conversation, ctx) {
+    const msg =
+        "Endi kalit so'z yuboring! \nAynan shu kalit so'z orqali bu ma'lumotni chatda jo'natasiz. Shuning uchun, kalit so'zni eslab qoling!";
+    const userId = ctx.from.id;
+    const messageId = ctx.msg.message_id;
+    await ctx.reply(msg, { reply_to_message_id: messageId });
+    const { message } = await conversation.wait();
+    await Memorize.create({
+        user_id: userId,
+        key: message.text,
+        text: ctx.message.text,
+    });
+    const obj = `
+    Kalit so'zi :${ctx.msg.text}
+Tekst :${message.text}
+    `;
+    await ctx.reply(obj);
+    const newmsg = "Endi ma'lumot va kalit so'zini tasdiqlang!!!";
+    await ctx.reply(newmsg, { reply_markup: confirmationKeyboard });
+}
 export function getMenuBar() {
     try {
         bot.api.setMyCommands([

@@ -13,24 +13,10 @@ const MemorizeSchema = new mongoose.Schema(
             required: true,
         },
         text: {
-            type: [String],
-            default: [],
-            validate: {
-                validator: (v) =>
-                    Array.isArray(v) &&
-                    v.every((item) => typeof item === "string"),
-                message: "text must be an array of strings.",
-            },
+            type: String,
         },
         key: {
-            type: [String],
-            default: [],
-            validate: {
-                validator: (v) =>
-                    Array.isArray(v) &&
-                    v.every((item) => typeof item === "string"),
-                message: "key must be an array of strings.",
-            },
+            type: String,
         },
     },
     { timestamps: true }
