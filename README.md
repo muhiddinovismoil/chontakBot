@@ -1,1 +1,1 @@
-# ustoz-shogirt-bot
+# Cho'ntak bot
