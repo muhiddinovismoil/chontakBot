@@ -49,6 +49,11 @@ bot.command("delete", async (ctx) => {
         .select("key _id")
         .lean();
     const keyboardAdjustment = await createInlineKeyboard(data);
+    if (keyboardAdjustment.length == 0) {
+        return ctx.reply(
+            "Sizda hozircha hech qanday ma'lumotlar saqlamagansiz. \n\nMa'lumot qo'shish uchun /add buyrug'ini bering"
+        );
+    }
     ctx.reply("Qaysi ma'lumotni o'chirishni istaysiz?", {
         reply_markup: { inline_keyboard: keyboardAdjustment },
     });
@@ -75,16 +80,24 @@ bot.callbackQuery("reset", async (ctx) => {
         "Qaytadan boshlaymizmi? \n\nOk! \n\nIstagan ma'lumot turini menga jo'nating 🙂..."
     );
 });
+bot.callbackQuery("o'chirish", async (ctx) => {
+    ctx.reply(
+        "O'chirish muvaffaqiyatli amalga oshdi! \n\nMa'lumot qo'shish uchun : /add \n\nMa'lumot o'chirish uchun : /delete \n\nYordam olish uchun : /help"
+    );
+});
 bot.on("callback_query:data", async (ctx) => {
     const callbackData = ctx.callbackQuery.data;
-    console.log("Callback data:", callbackData);
     try {
         if (!callbackData.startsWith("o'chirish")) {
-            const getData = await Memorize.findOne({ _id: callbackData });
+            const getData = await Memorize.findOneAndDelete({
+                _id: callbackData,
+            });
             if (getData) {
                 await ctx.reply(
                     `Kalit so'z: ${getData.key}\n\nMatn: ${getData.text}`,
-                    { reply_markup: ochiruvchiKeyboard }
+                    {
+                        reply_markup: ochiruvchiKeyboard,
+                    }
                 );
             } else {
                 await ctx.reply("Ma'lumot topilmadi.");
@@ -95,11 +108,7 @@ bot.on("callback_query:data", async (ctx) => {
         await ctx.reply("Xatolik yuz berdi. Ma'lumotni topa olmadik.");
     }
 });
-bot.callbackQuery("o'chirish", async (ctx) => {
-    ctx.reply(
-        "O'chirish muvaffaqiyatli amalga oshdi! \n\nMa'lumot qo'shish uchun : /add \n\nMa'lumot o'chirish uchun : /delete \n\nYordam olish uchun : /help"
-    );
-});
+
 async function conversationFunc(conversation, ctx) {
     const msg =
         "Endi kalit so'z yuboring! \nAynan shu kalit so'z orqali bu ma'lumotni chatda jo'natasiz. Shuning uchun, kalit so'zni eslab qoling!";
