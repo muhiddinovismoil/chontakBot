@@ -1,13 +1,17 @@
 import { bot } from "../bot/index.js";
-import { menuKeyboard } from "../keyboard/index.js";
+import {
+    confirmationKeyboard,
+    menuKeyboard,
+    createInlineKeyboard,
+    ochiruvchiKeyboard,
+} from "../keyboard/index.js";
 import { User, Memorize } from "../model/index.js";
-import { session, InlineKeyboard } from "grammy";
-import { confirmationKeyboard } from "../keyboard/index.js";
+import { session } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
 bot.use(
     session({
         initial: () => ({}),
-        getSessionKey: (ctx) => (ctx.chat ? `chat:${ctx.chat.id}` : null), // chatga tayyorlangan session key
+        getSessionKey: (ctx) => (ctx.chat ? `chat:${ctx.chat.id}` : null),
     })
 );
 bot.use(conversations());
@@ -40,8 +44,14 @@ bot.command("help", (ctx) => {
 bot.command("add", (ctx) => {
     ctx.reply("Istagan ma'lumot turini menga jo'nating...");
 });
-bot.command("delete", (ctx) => {
-    ctx.reply("botga malumotni o'chiramiz");
+bot.command("delete", async (ctx) => {
+    const data = await Memorize.find({ user_id: ctx.from.id })
+        .select("key _id")
+        .lean();
+    const keyboardAdjustment = await createInlineKeyboard(data);
+    ctx.reply("Qaysi ma'lumotni o'chirishni istaysiz?", {
+        reply_markup: { inline_keyboard: keyboardAdjustment },
+    });
 });
 bot.callbackQuery("accept", async (ctx) => {
     await ctx.answerCallbackQuery({
@@ -65,6 +75,31 @@ bot.callbackQuery("reset", async (ctx) => {
         "Qaytadan boshlaymizmi? \n\nOk! \n\nIstagan ma'lumot turini menga jo'nating 🙂..."
     );
 });
+bot.on("callback_query:data", async (ctx) => {
+    const callbackData = ctx.callbackQuery.data;
+    console.log("Callback data:", callbackData);
+    try {
+        if (!callbackData.startsWith("o'chirish")) {
+            const getData = await Memorize.findOne({ _id: callbackData });
+            if (getData) {
+                await ctx.reply(
+                    `Kalit so'z: ${getData.key}\n\nMatn: ${getData.text}`,
+                    { reply_markup: ochiruvchiKeyboard }
+                );
+            } else {
+                await ctx.reply("Ma'lumot topilmadi.");
+            }
+        }
+    } catch (error) {
+        console.error("Error finding data:", error.message);
+        await ctx.reply("Xatolik yuz berdi. Ma'lumotni topa olmadik.");
+    }
+});
+bot.callbackQuery("o'chirish", async (ctx) => {
+    ctx.reply(
+        "O'chirish muvaffaqiyatli amalga oshdi! \n\nMa'lumot qo'shish uchun : /add \n\nMa'lumot o'chirish uchun : /delete \n\nYordam olish uchun : /help"
+    );
+});
 async function conversationFunc(conversation, ctx) {
     const msg =
         "Endi kalit so'z yuboring! \nAynan shu kalit so'z orqali bu ma'lumotni chatda jo'natasiz. Shuning uchun, kalit so'zni eslab qoling!";
@@ -78,11 +113,10 @@ async function conversationFunc(conversation, ctx) {
         text: ctx.message.text,
     });
     const obj = `
-    Kalit so'zi :${ctx.msg.text}
-Tekst :${message.text}
+    Kalit so'z:  ${message.text}\n\nTekst:  ${ctx.msg.text}
     `;
     await ctx.reply(obj);
-    const newmsg = "Endi ma'lumot va kalit so'zini tasdiqlang!!!";
+    const newmsg = "Endi ma'lumot va kalit so'zni tasdiqlang!";
     await ctx.reply(newmsg, { reply_markup: confirmationKeyboard });
 }
 export function getMenuBar() {
@@ -119,17 +153,19 @@ bot.on("message", async (ctx) => {
     await ctx.conversation.enter("conversationFunc");
 });
 bot.on("inline_query", async (ctx) => {
-    const query = ctx.inlineQuery.query;
-    if (query) {
-        const results = await handleInlineQuery(ctx, query);
-        await ctx.answerInlineQuery(results);
-    }
+    const query = ctx.inlineQuery.query.trim();
+    const results = await handleInlineQuery(ctx, query);
+    await ctx.answerInlineQuery(results);
 });
 async function handleInlineQuery(ctx, query) {
     const userId = ctx.from.id;
     const getAll = await Memorize.find({ user_id: userId });
-    if (!query) return [];
-    const results = getAll.map((item, index) => ({
+    const filteredResults = query
+        ? getAll.filter((item) =>
+              item.key.toLowerCase().includes(query.toLowerCase())
+          )
+        : getAll;
+    const results = filteredResults.map((item, index) => ({
         type: "article",
         id: String(index + 1),
         title: item.key,
