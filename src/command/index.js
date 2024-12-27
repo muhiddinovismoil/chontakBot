@@ -1,11 +1,15 @@
 import { bot } from "../bot/index.js";
 import { menuKeyboard } from "../keyboard/index.js";
 import { User, Memorize } from "../model/index.js";
-import { session } from "grammy";
+import { session, InlineKeyboard } from "grammy";
 import { confirmationKeyboard } from "../keyboard/index.js";
 import { conversations, createConversation } from "@grammyjs/conversations";
-import { text } from "express";
-bot.use(session({ initial: () => ({}) }));
+bot.use(
+    session({
+        initial: () => ({}),
+        getSessionKey: (ctx) => (ctx.chat ? `chat:${ctx.chat.id}` : null), // chatga tayyorlangan session key
+    })
+);
 bot.use(conversations());
 bot.use(createConversation(conversationFunc, "conversationFunc"));
 bot.command("start", async (ctx) => {
@@ -40,13 +44,26 @@ bot.command("delete", (ctx) => {
     ctx.reply("botga malumotni o'chiramiz");
 });
 bot.callbackQuery("accept", async (ctx) => {
-    await ctx.answerCallbackQuery({ text: "Tasdiqlandi!" });
-    await ctx.reply("You confirmed the action!");
+    await ctx.answerCallbackQuery({
+        text: "Siz bu yordamchi so'zlaringizni saqladingiz",
+    });
+    await ctx.editMessageReplyMarkup(null);
+    await ctx.reply(
+        "Ma'lumot muvaffaqiyatli qo'shildi! 🥳 \n\n@simple_first_new_bot kalit so'z👈 \nshu jumlani Telegramdagi istagan chatga yozish orqali saqlangan ma'lumotni jo'natishingiz mumkin!"
+    );
 });
-
 bot.callbackQuery("reset", async (ctx) => {
-    await ctx.answerCallbackQuery({ text: "Tahrirlash tanlandi." });
-    await ctx.reply("You chose to reset.");
+    await ctx.answerCallbackQuery({
+        text: "Tahrirlash amalga oshirishingiz mumkin.",
+    });
+    await ctx.editMessageReplyMarkup(null);
+    const allData = await Memorize.find({ user_id: ctx.from.id });
+    const index = allData.length - 1;
+    const data = allData[index];
+    await Memorize.deleteOne({ _id: data._id });
+    await ctx.reply(
+        "Qaytadan boshlaymizmi? \n\nOk! \n\nIstagan ma'lumot turini menga jo'nating 🙂..."
+    );
 });
 async function conversationFunc(conversation, ctx) {
     const msg =
@@ -101,4 +118,25 @@ bot.hears("Qo'shish +", (ctx) => {
 bot.on("message", async (ctx) => {
     await ctx.conversation.enter("conversationFunc");
 });
+bot.on("inline_query", async (ctx) => {
+    const query = ctx.inlineQuery.query;
+    if (query) {
+        const results = await handleInlineQuery(ctx, query);
+        await ctx.answerInlineQuery(results);
+    }
+});
+async function handleInlineQuery(ctx, query) {
+    const userId = ctx.from.id;
+    const getAll = await Memorize.find({ user_id: userId });
+    if (!query) return [];
+    const results = getAll.map((item, index) => ({
+        type: "article",
+        id: String(index + 1),
+        title: item.key,
+        input_message_content: {
+            message_text: item.text,
+        },
+    }));
+    return results;
+}
 getMenuBar();
