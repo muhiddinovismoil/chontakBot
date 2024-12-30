@@ -1,4 +1,6 @@
 import { Bot } from "grammy";
+import { config } from "dotenv";
+config();
 if (!process.env.BOT_TOKEN) {
     console.error(
         "Error: BOT_TOKEN is not defined in the environment variables."
