@@ -1,12 +1,13 @@
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { TelegrafModule } from 'nestjs-telegraf';
-import { options } from 'src/config';
+import { options } from '@/config';
 import { BotService } from './bot.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MemorizeEntity, UserEntity } from '@/core';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([]),
+    TypeOrmModule.forFeature([UserEntity, MemorizeEntity]),
     TelegrafModule.forRootAsync(options()),
   ],
   providers: [BotService],
