@@ -1,21 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ObjectIdColumn, ObjectId, Column } from 'typeorm';
 
 @Entity()
 export class BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: string;
+  @ObjectIdColumn()
+  id: ObjectId;
 
   @Column({
     name: 'created_at',
-    type: 'bigint',
-    default: () => 'EXTRACT(epoch FROM NOW()) * 1000',
+    type: 'date',
+    default: () => 'CURRENT_TIMESTAMP',
   })
-  created_at: number;
+  created_at: Date;
 
   @Column({
     name: 'updated_at',
-    type: 'bigint',
-    default: Date.now(),
+    type: 'date',
+    default: () => 'CURRENT_TIMESTAMP',
   })
-  updated_at: number;
+  updated_at: Date;
 }

@@ -5,11 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres',
+      type: 'mongodb',
       url: config.DB_URI,
-      entities: ['dist/core/entity/*.entity{.ts,.js}'],
+      entities: [__dirname + '/core/entity/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: config.NODE_ENV == 'dev' ? true : false,
     }),
     BotModule,
   ],

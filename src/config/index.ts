@@ -7,6 +7,7 @@ export type ConfigType = {
   API_PORT: number;
   BOT_TOKEN: string;
   DB_URI: string;
+  NODE_ENV: string;
 };
 const requiredVariables = [
   'API_PORT',
@@ -28,6 +29,7 @@ if (missingVariables.length > 0) {
 export const config: ConfigType = {
   API_PORT: parseInt(process.env.API_PORT as string, 10),
   BOT_TOKEN: process.env.BOT_TOKEN as string,
+  NODE_ENV: process.env.NODE_ENV as string,
   DB_URI:
     process.env.NODE_ENV == 'dev'
       ? (process.env.DEV_DB_URL as string)
