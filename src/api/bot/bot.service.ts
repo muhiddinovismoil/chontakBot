@@ -1,5 +1,5 @@
 import { Update, Ctx, Command } from 'nestjs-telegraf';
-import { ContextType, helpMessage } from '@/common';
+import { ContextType, helpMessage, startMessage } from '@/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity, UserRepository } from '@/core';
 
@@ -25,6 +25,15 @@ export class BotService {
     await ctx.reply(
       `Assalamu alaykum, ${user?.first_name}${user?.last_name != undefined ? ' ' + user.last_name + ' ' : ' '}🎉`,
     );
+    await ctx.reply(startMessage, {
+      reply_markup: {
+        keyboard: [["Qo'shish +"]],
+        resize_keyboard: true,
+        force_reply: true,
+        one_time_keyboard: true,
+      },
+      parse_mode: 'HTML',
+    });
   }
 
   @Command('help')
@@ -33,7 +42,9 @@ export class BotService {
   }
 
   @Command('add')
-  async add(@Ctx() ctx: ContextType) {}
+  async add(@Ctx() ctx: ContextType) {
+    // await ctx.scene.enter()
+  }
 
   @Command('delete')
   async delete(@Ctx() ctx: ContextType) {}

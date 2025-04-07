@@ -1,4 +1,5 @@
 export * from './database/baseEntity';
-export * from './types/context.type';
+export * from './types';
 export * from './general/keyboard';
 export * from './general/message';
+export * from './template/reply.template';

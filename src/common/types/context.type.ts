@@ -7,5 +7,6 @@ export type ContextType = Context &
     session: {
       lang: string;
       lastMessage: any;
+      lastText: any;
     };
   };
