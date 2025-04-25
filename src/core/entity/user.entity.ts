@@ -2,7 +2,9 @@ import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '@/common';
 import { MemorizeEntity } from './memorize.entity';
 
-@Entity()
+@Entity({
+  name: 'users',
+})
 export class UserEntity extends BaseEntity {
   @Column()
   telegram_id: string;

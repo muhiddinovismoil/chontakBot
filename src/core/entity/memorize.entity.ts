@@ -2,7 +2,9 @@ import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@/common';
 import { UserEntity } from './user.entity';
 
-@Entity()
+@Entity({
+  name: 'memorize',
+})
 export class MemorizeEntity extends BaseEntity {
   @Column()
   content: string;
