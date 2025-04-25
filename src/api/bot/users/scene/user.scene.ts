@@ -1,6 +1,5 @@
 import { Ctx, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import * as general from '@/common';
-import { LocationI } from '@/common/types/other.type';
 
 @Scene('BeginScene')
 export class BeginScene {
@@ -51,8 +50,8 @@ export class BeginScene {
   @On('location')
   async onLocationHandler(@Ctx() ctx: general.ContextType) {
     const location = (ctx.update as any).message.location;
-    const { latitude, longitude }: LocationI = location;
-    console.log()
+    const { latitude, longitude }: general.LocationI = location;
+    // console.log()
   }
 }
 @Scene('AskKeyScene')
