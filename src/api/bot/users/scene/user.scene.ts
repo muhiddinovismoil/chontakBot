@@ -69,7 +69,7 @@ export class BeginScene {
   async onLocationHandler(@Ctx() ctx: general.ContextType) {
     const location = (ctx.update as any).message.location;
     const { latitude, longitude }: general.LocationI = location;
-    ctx.session.lastText = `${latitude}_${longitude}`;
+    ctx.session.lastText = `${latitude}_${longitude}_location`;
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.scene.enter('AskKeyScene');
   }
@@ -92,6 +92,13 @@ export class AskKeyScene {
     const message = (ctx.update as any).message;
     if (!('text' in message)) {
       return ctx.scene.enter('AskKeyAgainScene');
+    }
+    if (lastMsg.includes(':type-text')) {
+      console.log('bu text');
+    } else if (lastMsg.includes('_location')) {
+      console.log('bu location');
+    } else {
+      console.log('bu medialardan qaysiduri');
     }
     const obj: general.TemplateI = {
       content: lastMsg,
