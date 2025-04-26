@@ -96,8 +96,10 @@ export class AskKeyScene {
     if (lastMsg.includes(':type-text')) {
       console.log('bu text');
     } else if (lastMsg.includes('_location')) {
+      
       console.log('bu location');
     } else {
+      const media = ctx.telegram.getFileLink(lastMsg);
       console.log('bu medialardan qaysiduri');
     }
     const obj: general.TemplateI = {
