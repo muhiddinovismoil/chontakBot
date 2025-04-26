@@ -4,3 +4,5 @@ export const askContentMsg = `Istagan ma'lumot turini menga jo'nating 🙂...`;
 export const askContentKeyMsg = `Endi <b>kalit</b> so'z yuboring!\n\nAynan shu kalit so'z orqali bu ma'lumotni chatda jo'natasiz. Shuning \nuchun, kalit so'zni eslab qoling!`;
 export const askContentAcceptMsg = `Endi ma'lumot va kalit so'zni tasdiqlang!`;
 export const dataSavedMsg = `Ma'lumot muvaffaqiyatli qo'shildi! 🥳\n\n👉<b>@Chontakvoy_bot kalit so'z</b>👈\nshu jumlani Telegramdagi istalgan chatga yozish orqali saqlangan ma'lumotni jo'natishingiz mumkin!`;
+export const incorrectKeyInputMsg =
+  "Kalit so'z faqatgina tekst formatida bo'lishi mumkin!\n\nIltimos, faqatgina teks jo'nating!";

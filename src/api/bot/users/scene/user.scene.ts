@@ -14,7 +14,7 @@ export class BeginScene {
   @On('text')
   async onTextHandler(@Ctx() ctx: general.ContextType) {
     const message = ctx.message?.message_id;
-    ctx.session.lastText = (ctx.update as any).message.text;
+    ctx.session.lastText = `${(ctx.update as any).message.text}:type-text`;
     ctx.session.lastMessage = message;
     ctx.scene.enter('AskKeyScene');
   }
@@ -110,10 +110,7 @@ export class AskKeyScene {
 export class AskKeyAgainScene {
   @SceneEnter()
   async onEnter(ctx: general.ContextType) {
-    ctx.reply(
-      "Kalit so'z faqatgina tekst formatida bo'lishi mumkin!\n\nIltimos, faqatgina teks jo'nating!",
-      { parse_mode: 'HTML' },
-    );
+    ctx.reply(general.incorrectKeyInputMsg, { parse_mode: 'HTML' });
   }
   @On('message')
   async onTextHandler(@Ctx() ctx: general.ContextType) {
