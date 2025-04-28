@@ -32,4 +32,4 @@ To start the bot in development mode, run the following command:
 npm run start:dev
 ```
 
-<div align="center"> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original-wordmark.svg" alt="Node.js" width="100" height="100"/> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original-wordmark.svg" alt="Express.js" width="100" height="100"/> </div>
+<div align="center" style="border-radius: 15px; border: none; background-color: white"> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original-wordmark.svg" alt="Node.js" width="100" height="100"/> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original-wordmark.svg" alt="Express.js" width="100" height="100"/> </div>
