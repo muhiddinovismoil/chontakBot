@@ -8,5 +8,6 @@ export type ContextType = Context &
       lang: string;
       lastMessage: any;
       lastText: any;
+      media_type: string;
     };
   };

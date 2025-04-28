@@ -14,15 +14,27 @@ export class BeginScene {
   @On('text')
   async onTextHandler(@Ctx() ctx: general.ContextType) {
     const message = ctx.message?.message_id;
-    ctx.session.lastText = `${(ctx.update as any).message.text}:type-text`;
+    ctx.session.lastText = `${(ctx.update as any).message.text}`;
     ctx.session.lastMessage = message;
+    ctx.session.media_type = general.Media.TEXT;
     ctx.scene.enter('AskKeyScene');
   }
+
+  @On('photo')
+  async onPhotoHandler(@Ctx() ctx: general.ContextType) {
+    const photo = (ctx.update as any).message.photo;
+    ctx.session.lastMessage = ctx.message?.message_id;
+    ctx.session.lastText = photo[photo.length - 1]?.file_id;
+    ctx.session.media_type = general.Media.PHOTO;
+    ctx.scene.enter('AskKeyScene');
+  }
+
   @On('audio')
   async onAudioHandler(@Ctx() ctx: general.ContextType) {
     const audio = (ctx.update as any).message.audio;
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.session.lastText = audio?.file_id;
+    ctx.session.media_type = general.Media.AUDIO;
     ctx.scene.enter('AskKeyScene');
   }
   @On('animation')
@@ -30,6 +42,7 @@ export class BeginScene {
     const animation = (ctx.update as any).message.animation;
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.session.lastText = animation?.file_id;
+    ctx.session.media_type = general.Media.ANIMATION;
     ctx.scene.enter('AskKeyScene');
   }
 
@@ -38,6 +51,7 @@ export class BeginScene {
     const document = (ctx.update as any).message.document;
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.session.lastText = document?.file_id;
+    ctx.session.media_type = general.Media.DOCUMENT;
     ctx.scene.enter('AskKeyScene');
   }
 
@@ -46,6 +60,7 @@ export class BeginScene {
     const video = (ctx.update as any).message.video;
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.session.lastText = video.file_id;
+    ctx.session.media_type = general.Media.VIDEO;
     ctx.scene.enter('AskKeyScene');
   }
 
@@ -54,6 +69,7 @@ export class BeginScene {
     const sticker = (ctx.update as any).message.sticker;
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.session.lastText = sticker?.file_id;
+    ctx.session.media_type = general.Media.STICKER;
     ctx.scene.enter('AskKeyScene');
   }
 
@@ -62,6 +78,7 @@ export class BeginScene {
     const voice = (ctx.update as any).message.voice;
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.session.lastText = voice?.file_id;
+    ctx.session.media_type = general.Media.VOICE;
     ctx.scene.enter('AskKeyScene');
   }
 
@@ -69,8 +86,9 @@ export class BeginScene {
   async onLocationHandler(@Ctx() ctx: general.ContextType) {
     const location = (ctx.update as any).message.location;
     const { latitude, longitude }: general.LocationI = location;
-    ctx.session.lastText = `${latitude}_${longitude}_location`;
+    ctx.session.lastText = `${latitude}_${longitude}`;
     ctx.session.lastMessage = ctx.message?.message_id;
+    ctx.session.media_type = general.Media.LOCATION;
     ctx.scene.enter('AskKeyScene');
   }
 }
@@ -93,21 +111,57 @@ export class AskKeyScene {
     if (!('text' in message)) {
       return ctx.scene.enter('AskKeyAgainScene');
     }
-    if (lastMsg.includes(':type-text')) {
-      console.log('bu text');
-    } else if (lastMsg.includes('_location')) {
-      
-      console.log('bu location');
-    } else {
-      const media = ctx.telegram.getFileLink(lastMsg);
-      console.log('bu medialardan qaysiduri');
+    switch (ctx.session.media_type) {
+      case general.Media.TEXT:
+        const templateMsg = general.createTemplate({
+          key: message.text,
+          content: lastMsg,
+        });
+        return await ctx.reply(templateMsg, { parse_mode: 'HTML' });
+      case general.Media.PHOTO:
+        await ctx.replyWithPhoto(lastMsg, {
+          caption: general.KeyWordTemplate(message.text),
+          parse_mode: 'HTML',
+        });
+        break;
+      case general.Media.VIDEO:
+        await ctx.replyWithVideo(lastMsg, {
+          caption: message.text,
+          parse_mode: 'HTML',
+        });
+        break;
+      case general.Media.AUDIO:
+        await ctx.replyWithAudio(lastMsg, {
+          caption: message.text,
+          parse_mode: 'HTML',
+        });
+        break;
+      case general.Media.ANIMATION:
+        await ctx.replyWithAnimation(lastMsg, {
+          caption: message.text,
+          parse_mode: 'HTML',
+        });
+        break;
+      case general.Media.DOCUMENT:
+        await ctx.replyWithDocument(lastMsg, {
+          caption: message.text,
+          parse_mode: 'HTML',
+        });
+        break;
+      case general.Media.LOCATION:
+        if (lastMsg.length != undefined) {
+          const [latitude, longitude] = lastMsg.split('_');
+          await ctx.replyWithLocation(Number(latitude), Number(longitude));
+          await ctx.reply(general.KeyWordTemplate(message.text));
+        }
+        break;
+      case general.Media.STICKER:
+        await ctx.replyWithSticker(lastMsg);
+        await ctx.reply(general.KeyWordTemplate(message.text));
+        break;
+      default:
+        return await ctx.reply(general.incorrectMediaInputMsg);
     }
-    const obj: general.TemplateI = {
-      content: lastMsg,
-      key: message.text,
-    };
-    const templateMsg = general.createTemplate(obj);
-    await ctx.reply(templateMsg, { parse_mode: 'HTML' });
     await ctx.reply(general.askContentAcceptMsg, {
       reply_markup: general.acceptationKeyboard,
     });

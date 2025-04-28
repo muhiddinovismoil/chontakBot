@@ -6,3 +6,4 @@ export const askContentAcceptMsg = `Endi ma'lumot va kalit so'zni tasdiqlang!`;
 export const dataSavedMsg = `Ma'lumot muvaffaqiyatli qo'shildi! 🥳\n\n👉<b>@Chontakvoy_bot kalit so'z</b>👈\nshu jumlani Telegramdagi istalgan chatga yozish orqali saqlangan ma'lumotni jo'natishingiz mumkin!`;
 export const incorrectKeyInputMsg =
   "Kalit so'z faqatgina tekst formatida bo'lishi mumkin!\n\nIltimos, faqatgina teks jo'nating!";
+export const incorrectMediaInputMsg = 'Noto‘g‘ri media turi.'
