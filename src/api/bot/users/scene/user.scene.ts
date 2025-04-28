@@ -75,7 +75,7 @@ export class BeginScene {
 
   @On('video_note')
   async onVideoNote(@Ctx() ctx: general.ContextType) {
-    // await ctx.reply
+    ctx.reply(general.incorrectDataInputMsg);
   }
 
   @On('voice')
