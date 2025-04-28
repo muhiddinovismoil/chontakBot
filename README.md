@@ -1,3 +1,5 @@
+<div align="center"><a href="https://grammy.dev"><img src="https://raw.githubusercontent.com/grammyjs/website/main/logos/grammY.png" alt="grammY"></a></h1></div>
+
 # Cho'ntak Bot
 
 Cho'ntak Bot is a bot built using **Node.js**, **Grammy.js**, and **Express.js**. This bot serves as an interactive platform and can be extended with various features. The bot provides a basic `/start` command and runs on an Express.js server.
@@ -30,4 +32,4 @@ To start the bot in development mode, run the following command:
 npm run start:dev
 ```
 
-<div align="center"> <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo_2015.svg" alt="Node.js" width="100" height="100"/> <img src="https://grammy.dev/img/logo.svg" alt="Grammy.js" width="100" height="100"/> <img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Expressjs.png" alt="Express.js" width="100" height="100"/> </div>
+<div align="center"> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original-wordmark.svg" alt="Node.js" width="100" height="100"/> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original-wordmark.svg" alt="Express.js" width="100" height="100"/> </div>
