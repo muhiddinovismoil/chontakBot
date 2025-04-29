@@ -32,7 +32,7 @@ export class BotService {
       await newUser.save();
     }
     await ctx.reply(
-      `Assalamu alaykum, ${user?.first_name}${user?.last_name != undefined ? ' ' + user.last_name + ' ' : ' '}🎉`,
+      `Assalamu alaykum, ${ctx.from?.first_name ?? user?.first_name}${user?.last_name != undefined ? ' ' + user.last_name + ' ' : ' '}🎉`,
     );
     await ctx.reply(startMessage, {
       reply_markup: {

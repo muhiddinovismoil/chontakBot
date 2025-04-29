@@ -14,6 +14,9 @@ export class Memorize {
   @Prop({ name: 'type', enum: Media })
   type: Media;
 
+  @Prop({ name: 'user_id', type: String })
+  user_id: string;
+
   @Prop({ type: mongo.Schema.Types.ObjectId, ref: 'User' })
   user: User;
 }

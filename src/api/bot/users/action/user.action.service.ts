@@ -9,6 +9,10 @@ import {
 } from '@/common';
 import { Memorize, MemorizeDocument } from '@/core';
 
+interface CallbackContextType extends ContextType {
+  match: RegExpExecArray | null;
+}
+
 @Update()
 export class UserActionService {
   constructor(
@@ -42,33 +46,33 @@ export class UserActionService {
     const callback = ctx.callbackQuery;
     if (callback && 'data' in callback) {
       const data = callback.data;
-      console.log(data);
       if (data.startsWith('delete_')) {
-        const id = new ObjectId(data.replace('delete_', ''));
-        console.log(await this.memorizeRepo.find());
-        const memorized = await this.memorizeRepo.findOne({
-          where: {
-            id,
+        const id = data.replace('delete_', '');
+        const memorized = await this.memorizeModel.findById(id);
+        ctx.reply(
+          replyDeletingDataTemplate(
+            memorized?.key as string,
+            memorized?.content as string,
+          ),
+          {
+            reply_markup: {
+              inline_keyboard: [
+                [Markup.button.callback("o'chirish", `deleteItem_${id}`)],
+              ],
+            },
           },
-        });
-
-        console.log(memorized);
-        // ctx.reply(
-        //   replyDeletingDataTemplate(
-        //     memorized?.key as string,
-        //     memorized?.content as string,
-        //   ),
-        //   {
-        //     reply_markup: {
-        //       inline_keyboard: [
-        //         [Markup.button.callback("o'chirish", 'deleteItem')],
-        //       ],
-        //     },
-        //   },
-        // );
+        );
       }
     }
   }
-  @Action(/deleteItem/)
-  async onDelete(@Ctx() ctx: ContextType) {}
+  @Action(/deleteItem_(\w+)/)
+  async onDelete(@Ctx() ctx: CallbackContextType) {
+    if (ctx.match && Array.isArray(ctx.match)) {
+      const id = ctx.match[1];
+      const memorized = await this.memorizeModel.findByIdAndDelete(id);
+      ctx.reply(
+        `O'chirish muvaffaqiyatli amalga oshdi!\n\nMa'lumot qo'shish uchun : /add\n\nMa'lumot o'chirish uchun : /delete\n\n Yordam olish uchun : /help`,
+      );
+    }
+  }
 }

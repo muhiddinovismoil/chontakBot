@@ -81,7 +81,6 @@ export class BeginScene {
   @On('voice')
   async onVoiceHandler(@Ctx() ctx: general.ContextType) {
     const voice = (ctx.update as any).message.voice;
-    console.log(voice);
     ctx.session.lastMessage = ctx.message?.message_id;
     ctx.session.lastText = voice?.file_id;
     ctx.session.media_type = general.Media.VOICE;
