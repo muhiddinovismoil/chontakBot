@@ -1,5 +1,4 @@
 import { Update, Ctx, Command } from 'nestjs-telegraf';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   askWhichDataToDeleteMsg,
   ContextType,
@@ -8,33 +7,29 @@ import {
   startMessage,
   keyboardBuilder,
 } from '@/common';
-import {
-  MemorizeEntity,
-  MemorizeRepository,
-  UserEntity,
-  UserRepository,
-} from '@/core';
+import { Memorize, MemorizeDocument, User, UserDocument } from '@/core';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Update()
 export class BotService {
   constructor(
-    @InjectRepository(UserEntity) private readonly userRepo: UserRepository,
-    @InjectRepository(MemorizeEntity)
-    private readonly memorizeRepo: MemorizeRepository,
+    @InjectModel(User.name) private readonly userModel: UserDocument,
+    @InjectModel(Memorize.name)
+    private readonly memorizeModel: MemorizeDocument,
   ) {}
   @Command('start')
   async start(@Ctx() ctx: ContextType) {
     const tg_id = ctx.from?.id;
-    const user = await this.userRepo.findOne({
-      where: { telegram_id: tg_id?.toString() },
+    const user = await this.userModel.findOne({
+      telegram_id: tg_id?.toString(),
     });
     if (!user) {
-      const newUser = this.userRepo.create({
+      const newUser = new this.userModel({
         telegram_id: tg_id?.toString(),
         first_name: ctx.from?.first_name,
         last_name: ctx.from?.last_name,
       });
-      await this.userRepo.save(newUser);
+      await newUser.save();
     }
     await ctx.reply(
       `Assalamu alaykum, ${user?.first_name}${user?.last_name != undefined ? ' ' + user.last_name + ' ' : ' '}🎉`,
@@ -62,15 +57,11 @@ export class BotService {
 
   @Command('delete')
   async delete(@Ctx() ctx: ContextType) {
-    const allData = await this.memorizeRepo.find({
-      where: {
+    const allData = await this.memorizeModel
+      .find({
         user_id: `${ctx.from?.id}`,
-      },
-      select: {
-        key: true,
-        id: true,
-      },
-    });
+      })
+      .select('key _id');
     if (allData.length == 0) {
       await ctx.reply(noDataToDeleteMsg);
       return;

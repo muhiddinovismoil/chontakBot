@@ -1,4 +1,4 @@
-import { HydratedDocument } from 'mongoose';
+import { Model } from 'mongoose';
 import { Memorize } from '../schema';
 
-export type MemorizeDocument = HydratedDocument<Memorize>;
+export type MemorizeDocument = Model<Memorize>;

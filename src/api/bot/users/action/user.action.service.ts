@@ -1,20 +1,19 @@
 import { Action, Ctx, Hears, On, Update } from 'nestjs-telegraf';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import { Markup } from 'telegraf';
 import {
   ContextType,
   dataSavedMsg,
   Media,
   replyDeletingDataTemplate,
 } from '@/common';
-import { MemorizeEntity, MemorizeRepository } from '@/core';
-import { ObjectId } from 'mongodb';
-import { Markup } from 'telegraf';
+import { Memorize, MemorizeDocument } from '@/core';
 
 @Update()
 export class UserActionService {
   constructor(
-    @InjectRepository(MemorizeEntity)
-    private readonly memorizeRepo: MemorizeRepository,
+    @InjectModel(Memorize.name)
+    private readonly memorizeModel: MemorizeDocument,
   ) {}
   @Hears("Qo'shish +")
   async onHear(@Ctx() ctx: ContextType) {
@@ -23,13 +22,13 @@ export class UserActionService {
 
   @Action(/acceptBtn/)
   async onAccept(@Ctx() ctx: ContextType) {
-    const newData = this.memorizeRepo.create({
+    const newData = new this.memorizeModel({
       key: ctx.session.key,
       content: ctx.session.lastText,
       type: ctx.session.media_type as Media,
       user_id: `${ctx.from?.id}`,
     });
-    await this.memorizeRepo.save(newData);
+    await newData.save();
     await ctx.reply(dataSavedMsg, {
       parse_mode: 'HTML',
     });
