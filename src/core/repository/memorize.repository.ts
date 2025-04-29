@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
-import { MemorizeEntity } from '@/core';
+import { HydratedDocument } from 'mongoose';
+import { Memorize } from '../schema';
 
-export type MemorizeRepository = Repository<MemorizeEntity>;
+export type MemorizeDocument = HydratedDocument<Memorize>;

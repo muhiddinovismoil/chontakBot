@@ -1,4 +1,3 @@
-export * from './database/baseEntity';
 export * from './types';
 export * from './general';
 export * from './template';

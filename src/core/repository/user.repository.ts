@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
-import { UserEntity } from '@/core';
+import { HydratedDocument } from 'mongoose';
+import { User } from '../schema';
 
-export type UserRepository = Repository<UserEntity>;
+export type UserDocument = HydratedDocument<User>;
