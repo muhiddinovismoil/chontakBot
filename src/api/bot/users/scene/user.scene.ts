@@ -117,6 +117,7 @@ export class AskKeyScene {
     if (!('text' in message)) {
       return ctx.scene.enter('AskKeyAgainScene');
     }
+    ctx.session.key = message.text;
     await general.replyMedia(
       ctx,
       ctx.session.media_type,

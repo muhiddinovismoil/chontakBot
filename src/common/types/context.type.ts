@@ -5,7 +5,7 @@ export type ContextType = Context &
   SceneContext & {
     reply_to_message_id?: any;
     session: {
-      lang: string;
+      key: string;
       lastMessage: any;
       lastText: any;
       media_type: string;

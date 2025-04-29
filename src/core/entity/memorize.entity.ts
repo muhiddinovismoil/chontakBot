@@ -6,16 +6,16 @@ import { UserEntity } from './user.entity';
   name: 'memorize',
 })
 export class MemorizeEntity extends BaseEntity {
-  @Column({ name: 'content', type: 'varchar' })
+  @Column()
   content: string;
 
-  @Column({ name: 'key', type: 'varchar' })
+  @Column()
   key: string;
 
-  @Column({ name: 'type', enum: Media, type: 'enum' })
+  @Column({ enum: Media, type: 'enum' })
   type: Media;
 
-  @Column({ name: 'user_id', type: 'varchar' })
+  @Column()
   user_id: string;
 
   @ManyToOne(() => UserEntity, (user) => user.memorized)
