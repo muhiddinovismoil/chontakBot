@@ -1,7 +1,7 @@
-import { ContextType, dataSavedMsg } from '@/common';
-import { MemorizeEntity, MemorizeRepository, UserRepository } from '@/core';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Action, Ctx, Hears, Update } from 'nestjs-telegraf';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ContextType, dataSavedMsg } from '@/common';
+import { MemorizeEntity, MemorizeRepository } from '@/core';
 
 @Update()
 export class UserActionService {

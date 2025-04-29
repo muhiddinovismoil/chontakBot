@@ -1,6 +1,6 @@
 import { Update, Ctx, Command } from 'nestjs-telegraf';
-import { ContextType, helpMessage, startMessage } from '@/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ContextType, helpMessage, startMessage } from '@/common';
 import { UserEntity, UserRepository } from '@/core';
 
 @Update()
@@ -43,7 +43,7 @@ export class BotService {
 
   @Command('add')
   async add(@Ctx() ctx: ContextType) {
-    // await ctx.scene.enter()
+    await ctx.scene.enter('BeginScene');
   }
 
   @Command('delete')

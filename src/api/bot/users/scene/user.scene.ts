@@ -117,57 +117,6 @@ export class AskKeyScene {
     if (!('text' in message)) {
       return ctx.scene.enter('AskKeyAgainScene');
     }
-    // switch (ctx.session.media_type) {
-    //   case general.Media.TEXT:
-    //     const templateMsg = general.createTemplate({
-    //       key: message.text,
-    //       content: lastMsg,
-    //     });
-    //     return await ctx.reply(templateMsg, { parse_mode: 'HTML' });
-    //   case general.Media.PHOTO:
-    //     await ctx.replyWithPhoto(lastMsg, {
-    //       caption: general.KeyWordTemplate(message.text),
-    //       parse_mode: 'HTML',
-    //     });
-    //     break;
-    //   case general.Media.VIDEO:
-    //     await ctx.replyWithVideo(lastMsg, {
-    //       caption: message.text,
-    //       parse_mode: 'HTML',
-    //     });
-    //     break;
-    //   case general.Media.AUDIO:
-    //     await ctx.replyWithAudio(lastMsg, {
-    //       caption: message.text,
-    //       parse_mode: 'HTML',
-    //     });
-    //     break;
-    //   case general.Media.ANIMATION:
-    //     await ctx.replyWithAnimation(lastMsg, {
-    //       caption: message.text,
-    //       parse_mode: 'HTML',
-    //     });
-    //     break;
-    //   case general.Media.DOCUMENT:
-    //     await ctx.replyWithDocument(lastMsg, {
-    //       caption: message.text,
-    //       parse_mode: 'HTML',
-    //     });
-    //     break;
-    //   case general.Media.LOCATION:
-    //     if (lastMsg.length != undefined) {
-    //       const [latitude, longitude] = lastMsg.split('_');
-    //       await ctx.replyWithLocation(Number(latitude), Number(longitude));
-    //       await ctx.reply(general.KeyWordTemplate(message.text));
-    //     }
-    //     break;
-    //   case general.Media.STICKER:
-    //     await ctx.replyWithSticker(lastMsg);
-    //     await ctx.reply(general.KeyWordTemplate(message.text));
-    //     break;
-    //   default:
-    //     return await ctx.reply(general.incorrectMediaInputMsg);
-    // }
     await general.replyMedia(
       ctx,
       ctx.session.media_type,
@@ -198,6 +147,12 @@ export class AskKeyAgainScene {
       content: lastMsg,
       key: message.text,
     };
+    await general.replyMedia(
+      ctx,
+      ctx.session.media_type,
+      lastMsg,
+      message.text,
+    );
     const templateMsg = general.createTemplate(obj);
     await ctx.reply(templateMsg, { parse_mode: 'HTML' });
     await ctx.reply(general.askContentAcceptMsg, {

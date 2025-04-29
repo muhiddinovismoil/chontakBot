@@ -6,13 +6,13 @@ import { MemorizeEntity } from './memorize.entity';
   name: 'users',
 })
 export class UserEntity extends BaseEntity {
-  @Column()
+  @Column({ name: 'telegram_id', type: 'varchar' })
   telegram_id: string;
 
-  @Column()
+  @Column({ name: 'first_name', type: 'varchar' })
   first_name: string;
 
-  @Column()
+  @Column({ name: 'last_name', type: 'varchar' })
   last_name: string;
 
   @OneToMany(() => MemorizeEntity, (memo) => memo.user)

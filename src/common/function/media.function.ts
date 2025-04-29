@@ -1,5 +1,4 @@
 import * as general from '@/common';
-import { parse } from 'path';
 export async function replyMedia(ctx, mediaType, lastMsg, messageText) {
   const caption = general.KeyWordTemplate(messageText);
 
