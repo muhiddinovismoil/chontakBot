@@ -4,3 +4,6 @@ export function createTemplate(data: { key: string; content: string }) {
 export function KeyWordTemplate(text: string) {
   return `Kalit so'z: <b>${text}</b>`;
 }
+export function replyDeletingDataTemplate(text: string, content: string) {
+  return `Kalit so'z: ${text}\n\nTekst: ${content}`;
+}

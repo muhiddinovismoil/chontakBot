@@ -1,7 +1,14 @@
-import { Action, Ctx, Hears, Update } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, On, Update } from 'nestjs-telegraf';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ContextType, dataSavedMsg, Media } from '@/common';
+import {
+  ContextType,
+  dataSavedMsg,
+  Media,
+  replyDeletingDataTemplate,
+} from '@/common';
 import { MemorizeEntity, MemorizeRepository } from '@/core';
+import { ObjectId } from 'mongodb';
+import { Markup } from 'telegraf';
 
 @Update()
 export class UserActionService {
@@ -30,4 +37,39 @@ export class UserActionService {
 
   @Action(/editBtn/)
   async onEdit(@Ctx() ctx: ContextType) {}
+
+  @On('callback_query')
+  async handleCallBackQuery(@Ctx() ctx: ContextType) {
+    const callback = ctx.callbackQuery;
+    if (callback && 'data' in callback) {
+      const data = callback.data;
+      console.log(data);
+      if (data.startsWith('delete_')) {
+        const id = new ObjectId(data.replace('delete_', ''));
+        console.log(await this.memorizeRepo.find());
+        const memorized = await this.memorizeRepo.findOne({
+          where: {
+            id,
+          },
+        });
+
+        console.log(memorized);
+        // ctx.reply(
+        //   replyDeletingDataTemplate(
+        //     memorized?.key as string,
+        //     memorized?.content as string,
+        //   ),
+        //   {
+        //     reply_markup: {
+        //       inline_keyboard: [
+        //         [Markup.button.callback("o'chirish", 'deleteItem')],
+        //       ],
+        //     },
+        //   },
+        // );
+      }
+    }
+  }
+  @Action(/deleteItem/)
+  async onDelete(@Ctx() ctx: ContextType) {}
 }

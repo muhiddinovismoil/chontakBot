@@ -1,12 +1,26 @@
 import { Update, Ctx, Command } from 'nestjs-telegraf';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ContextType, helpMessage, startMessage } from '@/common';
-import { UserEntity, UserRepository } from '@/core';
+import {
+  askWhichDataToDeleteMsg,
+  ContextType,
+  helpMessage,
+  noDataToDeleteMsg,
+  startMessage,
+  keyboardBuilder,
+} from '@/common';
+import {
+  MemorizeEntity,
+  MemorizeRepository,
+  UserEntity,
+  UserRepository,
+} from '@/core';
 
 @Update()
 export class BotService {
   constructor(
     @InjectRepository(UserEntity) private readonly userRepo: UserRepository,
+    @InjectRepository(MemorizeEntity)
+    private readonly memorizeRepo: MemorizeRepository,
   ) {}
   @Command('start')
   async start(@Ctx() ctx: ContextType) {
@@ -47,5 +61,24 @@ export class BotService {
   }
 
   @Command('delete')
-  async delete(@Ctx() ctx: ContextType) {}
+  async delete(@Ctx() ctx: ContextType) {
+    const allData = await this.memorizeRepo.find({
+      where: {
+        user_id: `${ctx.from?.id}`,
+      },
+      select: {
+        key: true,
+        id: true,
+      },
+    });
+    if (allData.length == 0) {
+      await ctx.reply(noDataToDeleteMsg);
+      return;
+    }
+    await ctx.reply(askWhichDataToDeleteMsg, {
+      reply_markup: {
+        inline_keyboard: keyboardBuilder(allData),
+      },
+    });
+  }
 }

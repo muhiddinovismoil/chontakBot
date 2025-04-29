@@ -9,3 +9,6 @@ export const incorrectKeyInputMsg =
 export const incorrectMediaInputMsg = 'Noto‘g‘ri media turi.';
 export const incorrectDataInputMsg =
   "Bu ma'lumot turi saqlab bo'lmaydi...\n\nBoshqa ma'lumot turini jo'nating!";
+export const noDataToDeleteMsg =
+  "Sizda hozircha hech qanday ma'lumotlar saqlamagansiz.\n\nMa'lumot qo'shish uchun /add buyrug'ini bering.";
+export const askWhichDataToDeleteMsg = "Qaysi ma'lumotni o'chirishni istaysiz?";
