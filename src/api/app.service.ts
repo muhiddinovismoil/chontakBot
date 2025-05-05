@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import * as express from 'express';
 import * as path from 'path';
 import { config } from '@/config';
-import { AppModule } from './app.module';
+import { AppModule } from '@/api/app.module';
 import { ConsoleLogger } from '@nestjs/common';
 
 export class Application {
