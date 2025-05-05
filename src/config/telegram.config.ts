@@ -19,8 +19,8 @@ const telegrafModuleOptions = (): TelegrafModuleOptions => {
     ],
     // launchOptions: {
     //   webhook: {
-    //     domain: '',
-    //     port: 8443,
+    //     domain: config.PUBLIC_URL,
+    //     path: '/telegraf/webhook',
     //   },
     // },
   };
