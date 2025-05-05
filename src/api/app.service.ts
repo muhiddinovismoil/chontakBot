@@ -6,7 +6,9 @@ import { AppModule } from './app.module';
 
 export class Application {
   static async main(): Promise<void> {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      logger: ['error', 'warn', 'debug', 'log'],
+    });
     app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
     app.listen(config.API_PORT || 3000);
   }
