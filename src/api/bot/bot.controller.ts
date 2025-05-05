@@ -2,7 +2,7 @@
 // import { Request, Response } from 'express';
 // import { BotService } from './bot.service';
 
-// @Controller('telegram')
+// @Controller('telegraf')
 // export class BotController {
 //   constructor(private readonly botService: BotService) {}
 
