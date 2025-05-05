@@ -23,6 +23,7 @@ export class BotService {
     const user = await this.userModel.findOne({
       telegram_id: tg_id?.toString(),
     });
+    ctx.session.adding = false;
     if (!user) {
       const newUser = new this.userModel({
         telegram_id: tg_id?.toString(),
