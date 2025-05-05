@@ -46,6 +46,7 @@ export class BotService {
 
   @Command('add')
   async add(@Ctx() ctx: general.ContextType) {
+    ctx.session.adding = true;
     await ctx.scene.enter('BeginScene');
   }
 

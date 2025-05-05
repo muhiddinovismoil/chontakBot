@@ -1,6 +1,5 @@
 import { Action, Ctx, Hears, On, Update } from 'nestjs-telegraf';
 import { InjectModel } from '@nestjs/mongoose';
-import { Markup } from 'telegraf';
 import { Memorize, MemorizeDocument } from '@/core';
 import * as general from '@/common';
 
@@ -144,15 +143,13 @@ export class UserActionService {
       const id = data.replace('delete_', '');
       const memorized = await this.memorizeModel.findById(id);
       if (memorized) {
-        await ctx.reply(
-          general.replyDeletingDataTemplate(memorized.key, memorized.content),
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [Markup.button.callback("o'chirish", `deleteItem_${id}`)],
-              ],
-            },
-          },
+        await general.replyMedia(
+          ctx,
+          memorized.type,
+          memorized.content,
+          memorized.key,
+          "o'chirish",
+          `deleteItem_${id}`,
         );
       }
     }
