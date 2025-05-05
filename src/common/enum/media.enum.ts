@@ -9,3 +9,8 @@ export enum Media {
   VOICE = 'VOICE',
   LOCATION = 'LOCATION',
 }
+export enum ParseMode {
+  HTML = 'HTML',
+  Markdown = 'Markdown',
+  MarkdownV2 = 'MarkdownV2',
+}

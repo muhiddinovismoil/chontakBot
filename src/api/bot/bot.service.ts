@@ -17,6 +17,7 @@ export class BotService {
       telegram_id: tg_id?.toString(),
     });
     ctx.session.adding = false;
+    ctx.session.deleting = false;
     if (!user) {
       const newUser = new this.userModel({
         telegram_id: tg_id?.toString(),
@@ -52,6 +53,7 @@ export class BotService {
 
   @Command('delete')
   async delete(@Ctx() ctx: general.ContextType) {
+    ctx.session.deleting = true;
     const allData = await this.memorizeModel
       .find({
         user_id: `${ctx.from?.id}`,

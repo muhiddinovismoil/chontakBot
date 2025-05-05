@@ -14,3 +14,4 @@ export const incorrectDataInputMsg =
 export const noDataToDeleteMsg =
   "Sizda hozircha hech qanday ma'lumotlar saqlamagansiz.\n\nMa'lumot qo'shish uchun /add buyrug'ini bering.";
 export const askWhichDataToDeleteMsg = "Qaysi ma'lumotni o'chirishni istaysiz?";
+export const askToPressAddButtonMsg = `Iltimos, ma'lumot qo'shish uchun pastdagi Qo'shish tugmasini bosing.\n\nYoki yordam oling...\n\n/help\n👆`;

@@ -7,6 +7,7 @@ export type ContextType = Context &
     session: {
       key: string;
       adding: boolean;
+      deleting: boolean;
       isEditing: boolean;
       lastMessage: any;
       lastText: any;
