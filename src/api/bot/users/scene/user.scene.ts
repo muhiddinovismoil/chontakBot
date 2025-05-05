@@ -5,11 +5,20 @@ import * as general from '@/common';
 export class BeginScene {
   @SceneEnter()
   async onEnter(ctx: general.ContextType) {
-    ctx.reply(general.askContentMsg, {
-      reply_markup: {
-        remove_keyboard: true,
-      },
-    });
+    const isEditing = ctx.session.isEditing;
+    if (!isEditing) {
+      ctx.reply(general.askContentMsg, {
+        reply_markup: {
+          remove_keyboard: true,
+        },
+      });
+    } else {
+      ctx.reply(general.editAskContentMsg, {
+        reply_markup: {
+          remove_keyboard: true,
+        },
+      });
+    }
   }
   @On('text')
   async onTextHandler(@Ctx() ctx: general.ContextType) {

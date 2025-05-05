@@ -7,3 +7,6 @@ export function KeyWordTemplate(text: string) {
 export function replyDeletingDataTemplate(text: string, content: string) {
   return `Kalit so'z: ${text}\n\nTekst: ${content}`;
 }
+export function afterDeletionTemplate() {
+  return `O'chirish muvaffaqiyatli amalga oshdi!\n\nMa'lumot qo'shish uchun : /add\n\nMa'lumot o'chirish uchun : /delete\n\n Yordam olish uchun : /help`;
+}

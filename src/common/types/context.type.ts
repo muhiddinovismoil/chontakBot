@@ -6,6 +6,7 @@ export type ContextType = Context &
     reply_to_message_id?: any;
     session: {
       key: string;
+      isEditing: boolean;
       lastMessage: any;
       lastText: any;
       media_type: string;

@@ -2,6 +2,7 @@ import { Action, Ctx, Hears, On, Update } from 'nestjs-telegraf';
 import { InjectModel } from '@nestjs/mongoose';
 import { Markup } from 'telegraf';
 import {
+  afterDeletionTemplate,
   ContextType,
   dataSavedMsg,
   Media,
@@ -39,21 +40,22 @@ export class UserActionService {
   }
 
   @Action(/editBtn/)
-  async onEdit(@Ctx() ctx: ContextType) {}
+  async onEdit(@Ctx() ctx: ContextType) {
+    ctx.session.isEditing = true;
+    ctx.scene.enter('BeginScene');
+  }
 
   @On('callback_query')
-  async handleCallBackQuery(@Ctx() ctx: ContextType) {
+  async onCallbackQuery(@Ctx() ctx: CallbackContextType) {
     const callback = ctx.callbackQuery;
-    if (callback && 'data' in callback) {
-      const data = callback.data;
-      if (data.startsWith('delete_')) {
-        const id = data.replace('delete_', '');
-        const memorized = await this.memorizeModel.findById(id);
-        ctx.reply(
-          replyDeletingDataTemplate(
-            memorized?.key as string,
-            memorized?.content as string,
-          ),
+    if (!callback || !('data' in callback)) return;
+    const data = callback.data;
+    if (data.startsWith('delete_')) {
+      const id = data.replace('delete_', '');
+      const memorized = await this.memorizeModel.findById(id);
+      if (memorized) {
+        await ctx.reply(
+          replyDeletingDataTemplate(memorized.key, memorized.content),
           {
             reply_markup: {
               inline_keyboard: [
@@ -64,15 +66,10 @@ export class UserActionService {
         );
       }
     }
-  }
-  @Action(/deleteItem_(\w+)/)
-  async onDelete(@Ctx() ctx: CallbackContextType) {
-    if (ctx.match && Array.isArray(ctx.match)) {
-      const id = ctx.match[1];
-      const memorized = await this.memorizeModel.findByIdAndDelete(id);
-      ctx.reply(
-        `O'chirish muvaffaqiyatli amalga oshdi!\n\nMa'lumot qo'shish uchun : /add\n\nMa'lumot o'chirish uchun : /delete\n\n Yordam olish uchun : /help`,
-      );
+    if (data.startsWith('deleteItem_')) {
+      const id = data.replace('deleteItem_', '');
+      await this.memorizeModel.findByIdAndDelete(id);
+      await ctx.reply(afterDeletionTemplate());
     }
   }
 }
