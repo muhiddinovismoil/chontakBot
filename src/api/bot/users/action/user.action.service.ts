@@ -1,8 +1,8 @@
 import { Action, Ctx, Hears, On, Update } from 'nestjs-telegraf';
 import { InjectModel } from '@nestjs/mongoose';
 import { Markup } from 'telegraf';
-import * as general from '@/common';
 import { Memorize, MemorizeDocument } from '@/core';
+import * as general from '@/common';
 
 interface CallbackContextType extends general.ContextType {
   match: RegExpExecArray | null;
