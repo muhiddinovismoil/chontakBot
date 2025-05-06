@@ -24,14 +24,12 @@ export class UserActionService {
     private readonly memorizeModel: MemorizeDocument,
   ) {}
 
-  // Helper method to handle the 'deleting' check and sending reply
   private handleDeletingState(ctx: general.ContextType) {
     if (ctx.session.deleting && !ctx.session.adding) {
       ctx.reply(general.askToPressAddButtonMsg, this.keyboardOptions);
     }
   }
 
-  // Helper method for handling media input
   private async handleMediaInput(ctx: general.ContextType, mediaType: string) {
     if (!ctx.session.adding) return;
 
@@ -120,6 +118,7 @@ export class UserActionService {
 
   @Action(/acceptBtn/)
   async onAccept(@Ctx() ctx: general.ContextType) {
+    await ctx.editMessageReplyMarkup(general.disabledAcceptionKeyboard);
     const newData = new this.memorizeModel({
       key: ctx.session.key,
       content: ctx.session.lastText,
@@ -133,6 +132,7 @@ export class UserActionService {
   @Action(/editBtn/)
   async onEdit(@Ctx() ctx: general.ContextType) {
     ctx.session.isEditing = true;
+    await ctx.editMessageReplyMarkup(general.disabledAcceptionKeyboard);
     ctx.scene.enter('BeginScene');
   }
 

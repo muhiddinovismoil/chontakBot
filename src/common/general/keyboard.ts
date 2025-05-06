@@ -12,3 +12,11 @@ export const acceptationKeyboard: InlineKeyboardMarkup = {
 export const deleteKeyboard: InlineKeyboardMarkup = {
   inline_keyboard: [[Markup.button.callback(`o'chirish`, 'deleteBtn')]],
 };
+export const disabledAcceptionKeyboard: InlineKeyboardMarkup = {
+  inline_keyboard: [
+    [
+      Markup.button.callback('tasdiqlash ✅', 'disabledAcceptButton'),
+      Markup.button.callback('tahrirlash ✏️', 'disabledEditButton'),
+    ],
+  ],
+};
