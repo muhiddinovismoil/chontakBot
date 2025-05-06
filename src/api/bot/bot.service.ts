@@ -1,7 +1,8 @@
-import { Update, Ctx, Command } from 'nestjs-telegraf';
+import { Update, Ctx, Command, On } from 'nestjs-telegraf';
 import { InjectModel } from '@nestjs/mongoose';
 import { Memorize, MemorizeDocument, User, UserDocument } from '@/core';
 import * as general from '@/common';
+import { InlineQueryResult } from 'telegraf/typings/core/types/typegram';
 
 @Update()
 export class BotService {
@@ -68,5 +69,32 @@ export class BotService {
         inline_keyboard: general.keyboardBuilder(allData),
       },
     });
+  }
+  private async handleInlineQuery(
+    ctx: general.ContextType,
+    query: string,
+  ): Promise<InlineQueryResult[]> {
+    const userId = ctx.from?.id;
+    const getAll = await this.memorizeModel.find({ user_id: userId });
+    const filteredResults = query
+      ? getAll.filter((item) =>
+          item.key.toLowerCase().includes(query.toLowerCase()),
+        )
+      : getAll;
+
+    const results = filteredResults
+      .map((item, index) => general.mapToInlineResult(item, `${index + 1}`))
+      .filter((r): r is InlineQueryResult => r !== null);
+
+    return results;
+  }
+
+  @On('inline_query')
+  async onInlineQuery(@Ctx() ctx: general.ContextType) {
+    if (ctx.inlineQuery && 'query' in ctx.inlineQuery) {
+      const query = ctx.inlineQuery.query.trim();
+      const results = await this.handleInlineQuery(ctx, query);
+      await ctx.answerInlineQuery(results, { cache_time: 0 });
+    }
   }
 }

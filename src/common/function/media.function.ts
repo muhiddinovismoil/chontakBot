@@ -1,5 +1,6 @@
 import * as general from '@/common';
-import { Markup } from 'telegraf';
+import { InlineQueryResult } from 'telegraf/typings/core/types/typegram';
+
 export async function replyMedia(
   ctx: general.ContextType,
   mediaType: any,
@@ -58,5 +59,82 @@ export async function replyMedia(
     default:
       await ctx.reply(general.incorrectMediaInputMsg);
       break;
+  }
+}
+
+export function mapToInlineResult(item: any, id: string): InlineQueryResult | null {
+  const base = { id, title: item.key };
+
+  switch (item.type) {
+    case general.Media.TEXT:
+      return {
+        type: 'article',
+        ...base,
+        input_message_content: {
+          message_text: item.content,
+        },
+      };
+
+    case general.Media.PHOTO:
+      return {
+        type: 'photo',
+        ...base,
+        photo_file_id: item.content,
+      };
+
+    case general.Media.AUDIO:
+      return {
+        type: 'audio',
+        ...base,
+        audio_file_id: item.content,
+      };
+
+    case general.Media.DOCUMENT:
+      return {
+        type: 'document',
+        ...base,
+        document_file_id: item.content,
+      };
+
+    case general.Media.LOCATION:
+      const [lat, lon] = item.content.split('_');
+      if (!lat || !lon) return null;
+      return {
+        type: 'location',
+        ...base,
+        latitude: parseFloat(lat),
+        longitude: parseFloat(lon),
+      };
+
+    case general.Media.ANIMATION:
+      return {
+        type: 'gif',
+        ...base,
+        gif_file_id: item.content,
+      };
+
+    case general.Media.STICKER:
+      return {
+        type: 'sticker',
+        ...base,
+        sticker_file_id: item.content,
+      };
+
+    case general.Media.VIDEO:
+      return {
+        type: 'video',
+        ...base,
+        video_file_id: item.content,
+      };
+
+    case general.Media.VOICE:
+      return {
+        type: 'voice',
+        ...base,
+        voice_file_id: item.content,
+      };
+
+    default:
+      return null;
   }
 }
