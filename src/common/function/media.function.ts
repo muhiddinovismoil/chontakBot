@@ -14,7 +14,6 @@ export async function replyMedia(
   if (buttonText && buttonCallback) {
     replyOptions.reply_markup = {
       inline_keyboard: [[{ text: buttonText, callback_data: buttonCallback }]],
-      one_time_keyboard: true,
     };
   }
 

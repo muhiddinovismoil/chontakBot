@@ -2,6 +2,10 @@ import { Action, Ctx, Hears, On, Update } from 'nestjs-telegraf';
 import { InjectModel } from '@nestjs/mongoose';
 import { Memorize, MemorizeDocument } from '@/core';
 import * as general from '@/common';
+import {
+  InlineKeyboardButton,
+  Message,
+} from 'telegraf/typings/core/types/typegram';
 
 @Update()
 export class UserActionService {
@@ -136,14 +140,29 @@ export class UserActionService {
   async onCallbackQuery(@Ctx() ctx: general.CallbackContextType) {
     const callback = ctx.callbackQuery;
     if (!callback || !('data' in callback)) return;
-
     const data = callback.data;
     ctx.session.adding = false;
-
     if (data.startsWith('delete_')) {
       const id = data.replace('delete_', '');
       const memorized = await this.memorizeModel.findById(id);
       if (memorized) {
+        const message = callback.message as Message & {
+          reply_markup?: {
+            inline_keyboard?: InlineKeyboardButton[][];
+          };
+        };
+        const originalKeyboard = message.reply_markup?.inline_keyboard;
+        if (originalKeyboard) {
+          const disabledKeyboard = originalKeyboard.map((row) =>
+            row.map((button) => ({
+              text: button.text ? button.text : `${button.text}`,
+              callback_data: 'disabled',
+            })),
+          );
+          await ctx.editMessageReplyMarkup({
+            inline_keyboard: disabledKeyboard,
+          });
+        }
         await general.replyMedia(
           ctx,
           memorized.type,
