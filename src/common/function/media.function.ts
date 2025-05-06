@@ -14,6 +14,7 @@ export async function replyMedia(
   if (buttonText && buttonCallback) {
     replyOptions.reply_markup = {
       inline_keyboard: [[{ text: buttonText, callback_data: buttonCallback }]],
+      one_time_keyboard: true,
     };
   }
 
@@ -62,7 +63,10 @@ export async function replyMedia(
   }
 }
 
-export function mapToInlineResult(item: any, id: string): InlineQueryResult | null {
+export function mapToInlineResult(
+  item: any,
+  id: string,
+): InlineQueryResult | null {
   const base = { id, title: item.key };
 
   switch (item.type) {

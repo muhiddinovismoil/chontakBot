@@ -67,6 +67,7 @@ export class BotService {
     await ctx.reply(general.askWhichDataToDeleteMsg, {
       reply_markup: {
         inline_keyboard: general.keyboardBuilder(allData),
+        one_time_keyboard: true,
       },
     });
   }
