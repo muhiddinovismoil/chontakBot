@@ -81,7 +81,7 @@ export function mapToInlineResult(
     case general.Media.PHOTO:
       return {
         type: 'photo',
-        ...base,
+        id,
         photo_file_id: item.content,
       };
 
@@ -112,14 +112,14 @@ export function mapToInlineResult(
     case general.Media.ANIMATION:
       return {
         type: 'gif',
-        ...base,
+        id,
         gif_file_id: item.content,
       };
 
     case general.Media.STICKER:
       return {
         type: 'sticker',
-        ...base,
+        id,
         sticker_file_id: item.content,
       };
 
