@@ -1,8 +1,16 @@
-import { Ctx, On, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import * as general from '@/common';
+import { Memorize, MemorizeDocument, User, UserDocument } from '@/core';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Scene('BeginScene')
 export class BeginScene {
+  constructor(
+    @InjectModel(Memorize.name)
+    private readonly memorizeModel: MemorizeDocument,
+    @InjectModel(User.name)
+    private readonly userModel: UserDocument,
+  ) {}
   @SceneEnter()
   async onEnter(ctx: general.ContextType) {
     const isEditing = ctx.session.isEditing;
@@ -20,6 +28,58 @@ export class BeginScene {
       });
     }
   }
+
+  @Hears('/start')
+  async onStart(@Ctx() ctx: general.ContextType) {
+    ctx.session.adding = false;
+    ctx.session.deleting = false;
+    const user = await this.userModel.findOne({
+      telegram_id: `${ctx.from?.id}`,
+    });
+    await ctx.reply(
+      `Assalamu alaykum, ${ctx.from?.first_name ?? user?.first_name}${user?.last_name != undefined ? ' ' + user.last_name + ' ' : ' '}🎉`,
+    );
+    await ctx.reply(general.startMessage, {
+      reply_markup: {
+        keyboard: [["Qo'shish +"]],
+        resize_keyboard: true,
+        force_reply: true,
+        one_time_keyboard: true,
+      },
+      parse_mode: 'HTML',
+    });
+  }
+
+  @Hears('/help')
+  async onHelp(@Ctx() ctx: general.ContextType) {
+    await ctx.reply(general.helpMessage);
+  }
+
+  @Hears('/add')
+  async onAdd(@Ctx() ctx: general.ContextType) {
+    ctx.session.adding = true;
+    await ctx.scene.enter('BeginScene');
+  }
+
+  @Hears('/delete')
+  async onDelete(@Ctx() ctx: general.ContextType) {
+    ctx.session.deleting = true;
+    const allData = await this.memorizeModel
+      .find({
+        user_id: `${ctx.from?.id}`,
+      })
+      .select('key _id');
+    if (allData.length == 0) {
+      await ctx.reply(general.noDataToDeleteMsg);
+      return;
+    }
+    await ctx.reply(general.askWhichDataToDeleteMsg, {
+      reply_markup: {
+        inline_keyboard: general.keyboardBuilder(allData),
+      },
+    });
+  }
+
   @On('text')
   async onTextHandler(@Ctx() ctx: general.ContextType) {
     const message = ctx.message?.message_id;
@@ -108,12 +168,69 @@ export class BeginScene {
 }
 @Scene('AskKeyScene')
 export class AskKeyScene {
+  constructor(
+    @InjectModel(Memorize.name)
+    private readonly memorizeModel: MemorizeDocument,
+    @InjectModel(User.name)
+    private readonly userModel: UserDocument,
+  ) {}
   @SceneEnter()
   async onEnter(ctx: general.ContextType) {
     ctx.reply(general.askContentKeyMsg, {
       parse_mode: 'HTML',
       reply_parameters: {
         message_id: ctx.session.lastMessage,
+      },
+    });
+  }
+
+  @Hears('/start')
+  async onStart(@Ctx() ctx: general.ContextType) {
+    ctx.session.adding = false;
+    ctx.session.deleting = false;
+    const user = await this.userModel.findOne({
+      telegram_id: `${ctx.from?.id}`,
+    });
+    await ctx.reply(
+      `Assalamu alaykum, ${ctx.from?.first_name ?? user?.first_name}${user?.last_name != undefined ? ' ' + user.last_name + ' ' : ' '}🎉`,
+    );
+    await ctx.reply(general.startMessage, {
+      reply_markup: {
+        keyboard: [["Qo'shish +"]],
+        resize_keyboard: true,
+        force_reply: true,
+        one_time_keyboard: true,
+      },
+      parse_mode: 'HTML',
+    });
+  }
+
+  @Hears('/help')
+  async onHelp(@Ctx() ctx: general.ContextType) {
+    await ctx.reply(general.helpMessage);
+  }
+
+  @Hears('/add')
+  async onAdd(@Ctx() ctx: general.ContextType) {
+    ctx.session.adding = true;
+    await ctx.scene.enter('BeginScene');
+  }
+
+  @Hears('/delete')
+  async onDelete(@Ctx() ctx: general.ContextType) {
+    ctx.session.deleting = true;
+    const allData = await this.memorizeModel
+      .find({
+        user_id: `${ctx.from?.id}`,
+      })
+      .select('key _id');
+    if (allData.length == 0) {
+      await ctx.reply(general.noDataToDeleteMsg);
+      return;
+    }
+    await ctx.reply(general.askWhichDataToDeleteMsg, {
+      reply_markup: {
+        inline_keyboard: general.keyboardBuilder(allData),
       },
     });
   }
@@ -141,9 +258,65 @@ export class AskKeyScene {
 
 @Scene('AskKeyAgainScene')
 export class AskKeyAgainScene {
+  constructor(
+    @InjectModel(Memorize.name)
+    private readonly memorizeModel: MemorizeDocument,
+    @InjectModel(User.name)
+    private readonly userModel: UserDocument,
+  ) {}
   @SceneEnter()
   async onEnter(ctx: general.ContextType) {
     ctx.reply(general.incorrectKeyInputMsg, { parse_mode: 'HTML' });
+  }
+  @Hears('/start')
+  async onStart(@Ctx() ctx: general.ContextType) {
+    ctx.session.adding = false;
+    ctx.session.deleting = false;
+    const user = await this.userModel.findOne({
+      telegram_id: `${ctx.from?.id}`,
+    });
+    await ctx.reply(
+      `Assalamu alaykum, ${ctx.from?.first_name ?? user?.first_name}${user?.last_name != undefined ? ' ' + user.last_name + ' ' : ' '}🎉`,
+    );
+    await ctx.reply(general.startMessage, {
+      reply_markup: {
+        keyboard: [["Qo'shish +"]],
+        resize_keyboard: true,
+        force_reply: true,
+        one_time_keyboard: true,
+      },
+      parse_mode: 'HTML',
+    });
+  }
+
+  @Hears('/help')
+  async onHelp(@Ctx() ctx: general.ContextType) {
+    await ctx.reply(general.helpMessage);
+  }
+
+  @Hears('/add')
+  async onAdd(@Ctx() ctx: general.ContextType) {
+    ctx.session.adding = true;
+    await ctx.scene.enter('BeginScene');
+  }
+
+  @Hears('/delete')
+  async onDelete(@Ctx() ctx: general.ContextType) {
+    ctx.session.deleting = true;
+    const allData = await this.memorizeModel
+      .find({
+        user_id: `${ctx.from?.id}`,
+      })
+      .select('key _id');
+    if (allData.length == 0) {
+      await ctx.reply(general.noDataToDeleteMsg);
+      return;
+    }
+    await ctx.reply(general.askWhichDataToDeleteMsg, {
+      reply_markup: {
+        inline_keyboard: general.keyboardBuilder(allData),
+      },
+    });
   }
   @On('message')
   async onTextHandler(@Ctx() ctx: general.ContextType) {
