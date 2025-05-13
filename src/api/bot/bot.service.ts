@@ -3,6 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Memorize, MemorizeDocument, User, UserDocument } from '@/core';
 import * as general from '@/common';
 import { InlineQueryResult } from 'telegraf/typings/core/types/typegram';
+import { Inject } from '@nestjs/common';
+import { Telegraf } from 'telegraf';
+import { config } from '@/config';
 
 @Update()
 export class BotService {
@@ -10,7 +13,16 @@ export class BotService {
     @InjectModel(User.name) private readonly userModel: UserDocument,
     @InjectModel(Memorize.name)
     private readonly memorizeModel: MemorizeDocument,
+    @Inject(Telegraf) private readonly telegrafBot: Telegraf,
   ) {}
+
+  async onstart() {
+    await this.telegrafBot.createWebhook({
+      domain: `${config.PUBLIC_URL}/telegraf/webhook`,
+      path: '/telegraf/webhook',
+    });
+  }
+
   @Command('start')
   async start(@Ctx() ctx: general.ContextType) {
     const tg_id = ctx.from?.id;
