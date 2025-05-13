@@ -16,5 +16,6 @@ import { UsersModule } from './users/user.module';
     UsersModule,
   ],
   providers: [BotService],
+  exports: [TelegrafModule],
 })
 export class BotModule {}

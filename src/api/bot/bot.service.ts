@@ -3,9 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Memorize, MemorizeDocument, User, UserDocument } from '@/core';
 import * as general from '@/common';
 import { InlineQueryResult } from 'telegraf/typings/core/types/typegram';
-import { Inject } from '@nestjs/common';
-import { Telegraf } from 'telegraf';
-import { config } from '@/config';
 
 @Update()
 export class BotService {
