@@ -13,15 +13,7 @@ export class BotService {
     @InjectModel(User.name) private readonly userModel: UserDocument,
     @InjectModel(Memorize.name)
     private readonly memorizeModel: MemorizeDocument,
-    @Inject(Telegraf) private readonly telegrafBot: Telegraf,
   ) {}
-
-  async onstart() {
-    await this.telegrafBot.createWebhook({
-      domain: `${config.PUBLIC_URL}/telegraf/webhook`,
-      path: '/telegraf/webhook',
-    });
-  }
 
   @Command('start')
   async start(@Ctx() ctx: general.ContextType) {
