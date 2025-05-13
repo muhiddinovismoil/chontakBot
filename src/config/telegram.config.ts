@@ -17,12 +17,12 @@ const telegrafModuleOptions = (): TelegrafModuleOptions => {
         await next();
       },
     ],
-    // launchOptions: {
-    //   webhook: {
-    //     domain: config.PUBLIC_URL,
-    //     path: '/telegraf/webhook',
-    //   },
-    // },
+    launchOptions: {
+      webhook: {
+        domain: config.PUBLIC_URL,
+        path: '/telegraf/webhook',
+      },
+    },
   };
 };
 
