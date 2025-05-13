@@ -9,7 +9,6 @@ export type ConfigType = {
   DB_URI: string;
   NODE_ENV: string;
   BOT_USERNAME: string;
-  PUBLIC_URL: string;
 };
 const requiredVariables = [
   'API_PORT',
@@ -18,7 +17,6 @@ const requiredVariables = [
   'DEV_DB_URL',
   'BOT_USERNAME',
   'PROD_DB_URL',
-  'PUBLIC_URL',
 ];
 const missingVariables = requiredVariables.filter((variable) => {
   const value = process.env[variable];
@@ -35,7 +33,6 @@ export const config: ConfigType = {
   BOT_TOKEN: process.env.BOT_TOKEN as string,
   NODE_ENV: process.env.NODE_ENV as string,
   BOT_USERNAME: process.env.BOT_USERNAME as string,
-  PUBLIC_URL: process.env.PUBLIC_URL as string,
   DB_URI:
     process.env.NODE_ENV == 'dev'
       ? (process.env.DEV_DB_URL as string)

@@ -12,9 +12,9 @@ import { UsersModule } from './users/user.module';
       { name: User.name, schema: UserSchema },
       { name: Memorize.name, schema: MemorizeSchema },
     ]),
+    TelegrafModule.forRootAsync(options()),
     UsersModule,
   ],
   providers: [BotService],
-  exports: [TelegrafModule],
 })
 export class BotModule {}
